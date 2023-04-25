@@ -37,3 +37,5 @@ Name               |           ID
 Eden  Nigusie      |         UGR/8817/13
 Betelhem Yimam     |         UGR/8483/13
 Estubdink Awoke    |         UGR/1185/13
+Leul Bayesa        |         ATE/6690/12
+Biniyam Tesfu      |         ATE/0960/12
