@@ -26,6 +26,7 @@ class AppUserHomepage extends StatefulWidget {
 class _AppUserHomepageState extends State<AppUserHomepage> {
   late List<Map<String, dynamic>> _pages;
   var searchController = TextEditingController();
+  var loggedUserEmail = "";
   var selectedCategory = "";
   SharedPreferences? prefs;
   Map<String, dynamic> userInfo = {};
@@ -34,6 +35,9 @@ class _AppUserHomepageState extends State<AppUserHomepage> {
     prefs = await SharedPreferences.getInstance();
     String userPref = prefs!.getString('loggedUserInfo') ?? "";
     userInfo = jsonDecode(userPref) as Map<String, dynamic>;
+    setState(() {
+      loggedUserEmail = userInfo['loggedUserEmail'];
+    });
   }
 
   @override
@@ -80,7 +84,6 @@ class _AppUserHomepageState extends State<AppUserHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    var loggedUserEmail = userInfo['loggedUserEmail'] ?? "";
     var state = BlocProvider.of<LoginBloc>(context).state;
     if (state is LoginSuccess) {
       loggedUserEmail = state.loggedUser.email;
@@ -247,11 +250,13 @@ class _AppUserHomepageState extends State<AppUserHomepage> {
                 buildListTile(
                     title: 'Log Out',
                     icon: Icons.logout,
-                    onTap: () {
+                    onTap: () async {
+                      var prefs = await SharedPreferences.getInstance();
+                      await prefs.remove("loggedUserInfo");
                       context.read<LoginBloc>().add(
                             Logout(),
                           );
-                      GoRouter.of(context).go("/login");
+                      context.go("/login");
                     }),
               ],
             ),
@@ -327,7 +332,6 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Quote> favorites = [];
-    var loginState = BlocProvider.of<LoginBloc>(context).state;
     var favoriteQuotesState = BlocProvider.of<FavoriteBloc>(context).state;
     if (favoriteQuotesState is FavoriteQuotesFetched) {
       favorites = favoriteQuotesState.quotes;
@@ -357,7 +361,11 @@ class MyHomePage extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Card(
                   child: ListTile(
-                    onTap: () => context.go("/user/${quotes[index].id}"),
+                    onTap: () => context.go(
+                      Uri(
+                        path: "/user/${quotes[index].id}",
+                      ).toString(),
+                    ),
                     leading: const CircleAvatar(
                       backgroundImage: AssetImage("assets/images/images.jpg"),
                     ),
@@ -395,7 +403,11 @@ class MyHomePage extends StatelessWidget {
                               );
                         }
                         if (state is FavoriteQuotesFetched) {
+                          print("Favorite quotes fetched");
                           favorites = state.quotes;
+                        }
+                        if (state is FavoriteActionFailed) {
+                          print("Favorite Actions  Failed");
                         }
                       },
                       builder: (context, state) {

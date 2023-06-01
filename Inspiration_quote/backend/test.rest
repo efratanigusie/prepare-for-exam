@@ -2,20 +2,20 @@ GET http://localhost:4000/api/v1/getallusers
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXJyZW50VXNlciI6eyJfaWQiOiI2Mjk5MzM4M2U5YzA5MGZiZWJjZGM1MDIiLCJxdW90ZXMiOltdLCJlbWFpbCI6ImQiLCJwYXNzd29yZCI6IiQyYSQxMiRxLk5jU1ZmTzcxbUpiZXQ4ZnM0dWNlNXBuWlJCeVk3WHpHUy8vRXhjUGNuMzZaaHI5VHlpTyIsInJvbGUiOiJhZG1pbiIsInVzZXJJcyI6IkFkbWluIiwiX192IjowfSwiaWF0IjoxNjU0MjA3NTc0LCJleHAiOjE2NTQyMTQ3NzR9.ZbuUJbM4aSwL0BRapeCthn4bChOq4RRuvAeiaOD2u6c
 
 ###
-post http://localhost:4000/api/v1/signup
+post http://10.6.212.2:4000/api/v1/signup
 Content-Type: application/json
 
 {
-    "email": "admin", 
-    "password": "d", 
-    "confirmPassword": "d", 
-    "role":"admin"
+    "email": "daave@gmail.com", 
+    "password": "password", 
+    "confirmPassword": "password", 
+    "role":"user"
 }
 ###
 
 
 ###
-post http://localhost:4000/api/v1/login
+post http://10.6.212.2:4000/api/v1/login
 Content-Type: application/json
 
 {

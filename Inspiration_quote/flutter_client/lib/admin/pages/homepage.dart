@@ -23,6 +23,7 @@ class AdminHomepage extends StatefulWidget {
 }
 
 class _AdminHomepageState extends State<AdminHomepage> {
+  var loggedUserEmail = "";
   var searchController = TextEditingController();
   SharedPreferences? prefs;
   Map<String, dynamic> userInfo = {};
@@ -31,6 +32,9 @@ class _AdminHomepageState extends State<AdminHomepage> {
     prefs = await SharedPreferences.getInstance();
     String userPref = prefs!.getString('loggedUserInfo') ?? "";
     userInfo = jsonDecode(userPref) as Map<String, dynamic>;
+    setState(() {
+      loggedUserEmail = userInfo['loggedUserEmail'];
+    });
   }
 
   @override
@@ -52,7 +56,6 @@ class _AdminHomepageState extends State<AdminHomepage> {
 
   @override
   Widget build(BuildContext context) {
-    var loggedUserEmail = userInfo['loggedUserEmail'] ?? "email";
     var state = BlocProvider.of<LoginBloc>(context).state;
     if (state is LoginSuccess) {
       loggedUserEmail = state.loggedUser.email;
@@ -63,7 +66,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
         listener: (context, state) {
           if (state is QuoteActionSucceeded) {
             showTopSnackBar(
-              context,
+              Overlay.of(context),
               SizedBox(
                 width: 20,
                 child: CustomSnackBar.success(
@@ -71,7 +74,6 @@ class _AdminHomepageState extends State<AdminHomepage> {
                     icon: Container(),
                     message: state.message),
               ),
-              additionalTopPadding: 0,
               displayDuration: const Duration(milliseconds: 500),
             );
             context.read<QuoteBloc>().add(
@@ -218,7 +220,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
                     context.read<LoginBloc>().add(
                           Logout(),
                         );
-                    GoRouter.of(context).go("/login");
+                    context.go("/login");
                   },
                 )
               ]),
@@ -277,6 +279,11 @@ class Body extends StatelessWidget {
               ),
               child: QuoteRow(
                 value: quotes[index],
+                onTap: () {
+                  context.go(
+                    Uri(path: "/admin/${quotes[index].id}").toString(),
+                  );
+                },
                 token: token,
               ),
             );
@@ -422,7 +429,7 @@ class _QuoteAddAndUpdateFormState extends State<QuoteAddAndUpdateForm> {
                 GetAllQuotes(token: widget.token),
               );
           showTopSnackBar(
-            context,
+            Overlay.of(context),
             SizedBox(
               width: 20,
               child: CustomSnackBar.success(
@@ -430,13 +437,12 @@ class _QuoteAddAndUpdateFormState extends State<QuoteAddAndUpdateForm> {
                   icon: Container(),
                   message: state.message),
             ),
-            additionalTopPadding: 0,
             displayDuration: const Duration(milliseconds: 500),
           );
         }
         if (state is QuoteActionFailed) {
           showTopSnackBar(
-            context,
+            Overlay.of(context),
             SizedBox(
               width: 20,
               child: CustomSnackBar.error(
@@ -444,7 +450,6 @@ class _QuoteAddAndUpdateFormState extends State<QuoteAddAndUpdateForm> {
                   icon: Container(),
                   message: state.message),
             ),
-            additionalTopPadding: 0,
             displayDuration: const Duration(milliseconds: 500),
           );
         }

@@ -48,7 +48,7 @@ class _SignupPageState extends State<SignupPage> {
         listener: (context, state) {
           if (state is SignUpSuccess) {
             showTopSnackBar(
-              context as OverlayState,
+              Overlay.of(context),
               SizedBox(
                 width: 20,
                 child: CustomSnackBar.success(
@@ -56,10 +56,9 @@ class _SignupPageState extends State<SignupPage> {
                     icon: Container(),
                     message: "Sign up Success,login in to proceed."),
               ),
-              padding:EdgeInsets.only(top:0),
               displayDuration: const Duration(milliseconds: 500),
             );
-            GoRouter.of(context).go("/login");
+            context.go("/login");
           }
           if (state is SignUpLoading) {
             showDialog(
@@ -67,7 +66,7 @@ class _SignupPageState extends State<SignupPage> {
               barrierDismissible: true,
               builder: (BuildContext context) {
                 return const Center(
-                  child: SpinKitSpinningLines(
+                  child: SpinKitCircle(
                     size: 50,
                     color: Colors.deepPurpleAccent,
                   ),
@@ -77,7 +76,7 @@ class _SignupPageState extends State<SignupPage> {
           }
           if (state is SignUpFailed) {
             showTopSnackBar(
-              context as OverlayState,
+              Overlay.of(context),
               SizedBox(
                 width: 20,
                 child: CustomSnackBar.error(
@@ -85,7 +84,6 @@ class _SignupPageState extends State<SignupPage> {
                     icon: Container(),
                     message: "Sign Up Failed"),
               ),
-               padding:EdgeInsets.only(top:0),
               displayDuration: const Duration(milliseconds: 500),
             );
           }
@@ -200,7 +198,7 @@ class _SignupPageState extends State<SignupPage> {
                           backroundcolor: ColorPalettes.iconColor,
                           displaytext: const Text("sign in"),
                           onPressedfun: () {
-                            GoRouter.of(context).go("/login");
+                            context.go("/login");
                           },
                         ),
                       ),

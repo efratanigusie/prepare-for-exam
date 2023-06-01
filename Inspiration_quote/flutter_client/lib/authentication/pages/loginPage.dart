@@ -1,6 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_client/admin/blocs/quote/quote_bloc.dart';
@@ -41,9 +42,8 @@ class LoginPage extends StatelessWidget {
         listener: (context, state) async {
           if (state is LoginSuccess) {
             SharedPreferences prefs = await SharedPreferences.getInstance();
-            // ignore: use_build_context_synchronously
             showTopSnackBar(
-              context as OverlayState,
+              Overlay.of(context),
               SizedBox(
                 width: 20,
                 child: CustomSnackBar.success(
@@ -51,7 +51,6 @@ class LoginPage extends StatelessWidget {
                     icon: Container(),
                     message: "Login sucess"),
               ),
-               padding:EdgeInsets.only(top:0),
               displayDuration: const Duration(milliseconds: 500),
             );
             Map<String, dynamic> userData = {
@@ -64,19 +63,18 @@ class LoginPage extends StatelessWidget {
               "loggedUserInfo",
               jsonEncode(userData),
             );
-            print("shared prefs success");
             context.read<QuoteBloc>().add(
                   GetAllQuotes(token: state.token),
                 );
             //Authorization
             if (state.loggedUser.role == "admin") {
-              GoRouter.of(context).go("/admin");
+              context.go("/admin");
             } else {
               context.read<FavoriteBloc>().add(
                     GetFavoriteQuotes(
                         userId: state.loggedUser.id!, token: state.token),
                   );
-              GoRouter.of(context).go("/user");
+              context.go("/user");
             }
           }
           if (state is LoginLoading) {
@@ -85,7 +83,7 @@ class LoginPage extends StatelessWidget {
               barrierDismissible: true,
               builder: (BuildContext context) {
                 return const Center(
-                  child: SpinKitSpinningLines(
+                  child: SpinKitCircle(
                     size: 50,
                     color: Colors.deepPurpleAccent,
                   ),
@@ -95,7 +93,7 @@ class LoginPage extends StatelessWidget {
           }
           if (state is LoginFailed) {
             showTopSnackBar(
-              context as OverlayState,
+              Overlay.of(context),
               SizedBox(
                 width: 20,
                 child: CustomSnackBar.error(
@@ -103,9 +101,9 @@ class LoginPage extends StatelessWidget {
                     icon: Container(),
                     message: "Login  Failed"),
               ),
-               padding:EdgeInsets.only(top:0),
               displayDuration: const Duration(milliseconds: 500),
             );
+            Navigator.pop(context);
           }
         },
         builder: (context, state) {

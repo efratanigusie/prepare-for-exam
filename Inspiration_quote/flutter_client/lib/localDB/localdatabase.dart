@@ -41,9 +41,26 @@ class LocalCache {
     final db = await database;
     if (type == "favorites") {
       final res = await db.insert('Favorite', quote.toJson());
+      return res;
     } else {
       final res = await db.insert('Quote', quote.toJson());
+      return res;
     }
+  }
+
+  removeFromFavorites(String id) async {
+    final db = await database;
+    final res = await db.delete("Favorite", where: 'id = ?', whereArgs: [id]);
+    return res;
+  }
+
+  addToFavorites(Quote quote) async {
+    final db = await database;
+    final res = await db.insert(
+      "Favorite",
+      quote.toJson(),
+    );
+    return res;
   }
 
   Future<int> deleteAllQuotes({required String type}) async {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_client/admin/blocs/quote/quote_bloc.dart';
+import 'package:flutter_client/appuser/blocs/favorite/favorite_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -19,13 +20,11 @@ class _SplashScreenState extends State<SplashScreen> {
   Map<String, dynamic> userInfo = {};
 
   setSharedPreference() async {
-    print('shared preferences');
-    print('shared preferences');
-    var prefs = await SharedPreferences.getInstance();
-    print('FinishedR');
-    var info = prefs.getString('loggedUserInfo');
+    prefs = await SharedPreferences.getInstance();
+    var info = prefs!.getString('loggedUserInfo');
+    print("cached login info");
+    print(info);
     userInfo = info != null ? jsonDecode(info) as Map<String, dynamic> : {};
-    print(userInfo);
   }
 
   @override
@@ -45,11 +44,13 @@ class _SplashScreenState extends State<SplashScreen> {
         if (userInfo['role'] == "appuser") {
           context.go("/user");
           context.read<QuoteBloc>().add(GetAllQuotes(token: userInfo['token']));
+          context.read<FavoriteBloc>().add(GetFavoriteQuotes(
+              token: userInfo['token'], userId: userInfo['id']));
           return;
         }
       } else {
-        print('user info is empty');
-        return context.go("/login");
+        print("User info is empty");
+        context.go("/login");
       }
     });
     super.initState();

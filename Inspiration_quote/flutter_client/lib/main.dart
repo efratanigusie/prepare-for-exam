@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_client/admin/blocs/quote/quote_bloc.dart';
 import 'package:flutter_client/admin/dataproviders/remoteDataProvider.dart';
-import 'package:flutter_client/admin/models/quote.dart';
 import 'package:flutter_client/admin/repositories/quote.dart';
 import 'package:flutter_client/appuser/blocs/favorite/favorite_bloc.dart';
 import 'package:flutter_client/appuser/dataproviders/favorite.dart';
@@ -16,7 +15,6 @@ import 'package:flutter_client/authentication/pages/signupPage.dart';
 import 'package:flutter_client/blocObserver.dart';
 import 'package:flutter_client/splash/splash.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nb_utils/nb_utils.dart';
 
 import 'admin/pages/homepage.dart';
 import 'authentication/blocs/login/login_bloc.dart';
@@ -83,8 +81,7 @@ class App extends StatelessWidget {
             primarySwatch: Colors.blueGrey,
           ),
           debugShowCheckedModeBanner: false,
-          routeInformationParser: _goRouter.routeInformationParser,
-          routerDelegate: _goRouter.routerDelegate,
+          routerConfig: _goRouter,
         ),
       ),
     );
@@ -98,60 +95,61 @@ class App extends StatelessWidget {
           key: state.pageKey,
           child: const SplashScreen(),
         ),
-      ),
-      GoRoute(
-        path: "/login",
-        builder: (BuildContext context,GoRouterState state) { 
-          // key: state.pageKey,
-          return LoginPage();
-        }
-      ),
-      GoRoute(
-        path: "/signup",
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
-          child: const SignupPage(),
-        ),
-      ),
-      GoRoute(
-        path: "/admin",
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
-          child: const AdminHomepage(),
-        ),
         routes: [
           GoRoute(
-              path: ":id",
-              pageBuilder: (context, state) {
-                // final String id = state.queryParameters["id"]!.toString();
-                final String id = state.queryParameters['id']!;
-                return MaterialPage(
-                  key: state.pageKey,
-                  child: QuoteDetails(
-                    id: id,
-                  ),
-                );
-              }),
-        ],
-      ),
-      GoRoute(
-        path: "/user",
-        pageBuilder: (context, state) => MaterialPage(
-          key: state.pageKey,
-          child: const AppUserHomepage(),
-        ),
-        routes: [
+            path: "login",
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: LoginPage(),
+            ),
+          ),
           GoRoute(
-              path: ":id",
-              pageBuilder: (context, state) {
-                final String id = state.queryParameters["id"]!;
-                return MaterialPage(
-                  key: state.pageKey,
-                  child: QuoteDetails(
-                    id: id,
-                  ),
-                );
-              }),
+            path: "signup",
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: const SignupPage(),
+            ),
+          ),
+          GoRoute(
+            path: "admin",
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: const AdminHomepage(),
+            ),
+            routes: [
+              GoRoute(
+                  path: ":id",
+                  pageBuilder: (context, state) {
+                    var id = state.pathParameters["id"];
+                    return MaterialPage(
+                      key: state.pageKey,
+                      child: QuoteDetails(
+                        id: id.toString(),
+                      ),
+                    );
+                  }),
+            ],
+          ),
+          GoRoute(
+            path: "user",
+            pageBuilder: (context, state) => MaterialPage(
+              key: state.pageKey,
+              child: const AppUserHomepage(),
+            ),
+            routes: [
+              GoRoute(
+                  path: ":id",
+                  pageBuilder: (context, state) {
+                    final String id = state.pathParameters["id"]!;
+                    return MaterialPage(
+                      key: state.pageKey,
+                      child: QuoteDetails(
+                        id: id,
+                      ),
+                    );
+                  }),
+            ],
+          ),
         ],
       ),
     ],

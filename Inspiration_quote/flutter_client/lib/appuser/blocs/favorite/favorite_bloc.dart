@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_client/admin/blocs/quote/quote_bloc.dart';
 import 'package:flutter_client/admin/models/quote.dart';
 import 'package:flutter_client/appuser/repositories/favorite.dart';
 import 'package:meta/meta.dart';

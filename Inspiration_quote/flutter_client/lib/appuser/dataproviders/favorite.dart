@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter_client/admin/dataproviders/remoteDataProvider.dart';
 import 'package:flutter_client/admin/models/quote.dart';
 import 'package:flutter_client/localDB/localdatabase.dart';
 import 'package:flutter_client/utilities/urls.dart';
@@ -11,10 +13,10 @@ class FavoriteDataProvider {
     String quoteId,
     String userId,
   ) async {
+    var allQuotes = await QuoteDataProvider().getAll(token);
+    var quote = allQuotes.firstWhere((quote) => quote.id == quoteId);
     try {
       const url = apiBaseURL;
-      print("usl");
-      print("$url/favorite/$userId");
       var response = await http.post(
         Uri.parse("$url/quote/favorite/$userId"),
         headers: {
@@ -33,7 +35,12 @@ class FavoriteDataProvider {
       } else {
         return 1;
       }
+    } on SocketException {
+      print("Socket Exeption");
+      LocalCache.db.addToFavorites(quote);
+      return 0;
     } catch (e) {
+      print("Exception is ");
       print(
         e.toString(),
       );
@@ -48,7 +55,7 @@ class FavoriteDataProvider {
   ) async {
     try {
       const url = apiBaseURL;
-      print("favorite remove request is comming");
+      print("favorite remove request is comming in DP");
       var response = await http.delete(
         Uri.parse("$url/quote/favorite/$userId"),
         headers: {
@@ -64,7 +71,12 @@ class FavoriteDataProvider {
       } else {
         return 1;
       }
+    } on SocketException {
+      print("Socket Exception");
+      LocalCache.db.removeFromFavorites(quoteId);
+      return 0;
     } catch (e) {
+      print("Exception is ");
       print(
         e.toString(),
       );
@@ -73,6 +85,7 @@ class FavoriteDataProvider {
   }
 
   Future<List<Quote>> getFavoiteQuotes(String token, String userId) async {
+    print("Get Favorite Qutoes request");
     try {
       const url = apiBaseURL;
       var response = await http.get(
@@ -90,9 +103,12 @@ class FavoriteDataProvider {
       } else {
         throw Exception("Error while feching favorites");
       }
+    } on SocketException {
+      print("This is Socket Exception");
     } catch (e) {
       throw Exception("Error while feching favorites");
     }
+    print("After Exception");
     return await LocalCache.db.getAllQuotes(type: "favorites");
   }
 }

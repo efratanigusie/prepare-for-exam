@@ -19,6 +19,8 @@ class AuthDataProvider {
         },
         body: json.encode(user.toJson()),
       );
+      print("response");
+      print(response.body);
       print(response.statusCode);
       if (response.statusCode == 201) {
         return 0;
